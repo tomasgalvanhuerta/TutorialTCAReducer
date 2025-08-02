@@ -1,14 +1,18 @@
 # Tutorial Reducer
 
-Main Reducer: Reducer mean to portray to top layer of the feature. Not to be confused with the top Root Reducer that is top layer of the app. If a workout app that uses TCA has a camera feature to take photos, the top layer Reducer for the camera feature would be considered Main Reducer.
+## Defenition: 
+
+### - Main Reducer 
+
+#### Reducer means to portray to top layer of the feature. Not to be confused with the top Root Reducer that is top layer of the app. If a workout app that uses TCA has a camera feature to take photos, the top layer Reducer for the camera feature would be considered Main Reducer.
 
 ## What is it trying to solve? 
 
-When building Modular apps, it becomes easier to add more features. As the features keep piling up, one starts to think of to teach the user of such features. TutorialReducer guides the user when an expected action is triggered. A UIKit-Popover will appear above or below with a tip in `AttributeString`. Insperation was taken from TipKit. 
+When building Modular apps, it becomes easier to add more features. As the features keep piling up, one starts to think to teach the user of such features. TutorialReducer guides the user when an expected action is triggered. A UIKit-Popover(default) will appear above or below with a tip in `AttributeString`. Insperation was taken from TipKit. 
 
 ## How does it work?
 
-Quick refresher,  Reducers are meant to transmorm state and action by extracting a child state. User triggered actions will run on the respected Reducer and all previous reducers. Every action the Main Reducer obtains, children and gran-children of the Action, is eventaully the Main Reducer's Action. 
+Quick refresher,  Reducers are meant to transmorm state and action. User triggered actions will run on the respected Reducer and all previous reducers. Every action the Main Reducer obtains, children and gran-children of the Action, is eventaully the Main Reducer's Action. 
 Example: Figure 1
 
 ```swift
@@ -20,7 +24,7 @@ struct CameraFeature {
     case checkPermission
     case askuserPermission
     ...
-    case camera(CameraFeatureAction)
+    case camera(ShutterAction)
   }
   ...
 }
@@ -28,16 +32,16 @@ struct CameraFeature {
 
 Figure 1: CameraFeature, who's a child of X-Feature Reducer
 
-The reducer for CameraFeature's, converts all Actions from it's children, `CameraFeatureAction`, into `CameraFeature.Action`. Tutorial Reducer takes advantage of this to know which actions have been triggered. If the expected action is triggered TutorialReducer will move on to the next step that is required until no more steps are needed. 
+The reducer for CameraFeature's, converts all Actions from it's children, `ShutterAction`, into `CameraFeature.Action`. Tutorial Reducer takes advantage of this to know which actions have been triggered. If the expected action is triggered TutorialReducer will move on to the next step that is required until all steps are complete.
 
-## How will it use? 
+## How will it be used? 
 
 Four components will be added:
 
 - TutorialReducer
 - TutorialState<Action>
-- ViewModifiers
-- Dependency to route the output
+- ViewModifiers (Developer can create own)
+- Dependency (Tutorial Channel) to route the output
 
 ```mermaid
 sequenceDiagram
