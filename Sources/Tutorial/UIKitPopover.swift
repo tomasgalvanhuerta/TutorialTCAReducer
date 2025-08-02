@@ -5,14 +5,15 @@
 //  Created by Tomas Galvan-Huerta on 7/9/25.
 //
 
-import UIKit
+#if canImport(UIKit)
 import SwiftUI
 
+// Alternative to Pop Overs in iOS. iOS treats popOvers as Sheets
 struct UIKitPopover<Content: View>: UIViewControllerRepresentable {
     @Binding var item: TutorialDetails?
     let content: Content
 
-    init(item: Binding<TutorialDetails?> , @ViewBuilder content: () -> Content) { // Add T to (T)
+    init(item: Binding<TutorialDetails?> , @ViewBuilder content: () -> Content) {
         self._item = item
         self.content = content()
     }
@@ -62,3 +63,4 @@ struct UIKitPopover<Content: View>: UIViewControllerRepresentable {
         }
     }
 }
+#endif

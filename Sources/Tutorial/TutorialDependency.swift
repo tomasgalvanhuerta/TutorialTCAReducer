@@ -6,10 +6,11 @@
 //
 
 import Foundation
-import Combine
+@preconcurrency import Combine
 import Dependencies
 
-protocol TutorialChannel {
+@available(macOS 12, *)
+protocol TutorialChannel: Sendable {
     func path(_ path: TutorialDetails?)
     func stopTutorial()
     
@@ -19,6 +20,7 @@ protocol TutorialChannel {
     var cancelCurrent: AnyPublisher<TutorialDetails?, Never> { get }
 }
 
+@available(macOS 12, *)
 final class TutorialDependency: TutorialChannel {
     typealias Input = TutorialDetails
     typealias Failure = Never
@@ -44,11 +46,13 @@ final class TutorialDependency: TutorialChannel {
     }
 }
 
-extension TutorialDependency: DependencyKey {
-    static var liveValue: TutorialChannel = TutorialDependency.init()
-    static var testValue: TutorialChannel = TutorialDependency.init()
+@available(macOS 12, *)
+extension TutorialDependency: @preconcurrency DependencyKey {
+    @MainActor static var liveValue: TutorialChannel = TutorialDependency.init()
+    static let testValue: TutorialChannel = TutorialDependency.init()
 }
 
+@available(macOS 12, *)
 extension DependencyValues {
     var tutorial: TutorialChannel {
         get { self[TutorialDependency.self] }

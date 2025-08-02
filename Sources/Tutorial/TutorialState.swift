@@ -20,6 +20,7 @@ import Foundation
  }
  ```
  */
+@available(macOS 14, *)
 struct TutorialState<ParentAction: Equatable>: Equatable, Identifiable {
     typealias Path = TutorialInstruction<ParentAction>
     var steps: [Path]

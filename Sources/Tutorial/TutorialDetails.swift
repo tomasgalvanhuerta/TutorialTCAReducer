@@ -12,7 +12,9 @@ import Dependencies
     Details that will be presented as a popOver
  
  */
-struct TutorialDetails: Equatable, Identifiable {
+@available(macOS 12, *)
+struct TutorialDetails: Equatable, Identifiable, Sendable {
+    @available(macOS 12, *)
     init(_ displayID: String, _ detail: AttributedString) {
         @Dependency(\.uuid) var uuid
         self.displayID = displayID

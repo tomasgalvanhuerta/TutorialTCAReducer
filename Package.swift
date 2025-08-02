@@ -5,6 +5,13 @@ import PackageDescription
 
 let package = Package(
     name: "TutorialTCAReducer",
+    platforms: [
+        .macOS(.v10_15),
+        .iOS(.v17),
+        .macCatalyst(.v17),
+        .watchOS(.v10),
+        .visionOS(.v2)
+    ],
     products: [
         .library(
             name: "TutorialTCAReducer",
@@ -12,12 +19,15 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git" , from: .init(1, 0, 0)),
-        
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git" , from: .init(1, 0, 0))
     ],
     targets: [
         .target(
-            name: "TutorialTCAReducer"),
+            name: "TutorialTCAReducer",
+            dependencies: [
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
         .testTarget(
             name: "TutorialTCAReducerTests",
             dependencies: ["TutorialTCAReducer"]

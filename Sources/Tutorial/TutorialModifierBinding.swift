@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 import Dependencies
 
+@available(macOS 12, *)
 struct TutorialModifierBinding: ViewModifier {
     @Binding var tutorial: TutorialDetails?
     let viewID: String
@@ -24,16 +25,19 @@ struct TutorialModifierBinding: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background {
+                #if canImport(UIKit)
                 UIKitPopover(item: $tutorial, content: {
                     if let details = tutorial?.detail {
                         Text("\(details)")
                     }
                 })
+                #endif
             }
     }
 }
 
 
+@available(macOS 14, *)
 extension View {
     func tutorial(
         viewID: String
@@ -41,6 +45,7 @@ extension View {
         modifier(TutorialModifier(viewID: viewID))
     }
     
+    @available(macOS 14, *)
     func tutorial(
         bind: Binding<TutorialDetails?>,
         viewID: String
@@ -50,6 +55,7 @@ extension View {
 }
 
 
+@available(macOS 14, *)
 struct TutorialModifier: ViewModifier {
     @State var currentModifier: TutorialDetails?
     let viewID: String
@@ -68,12 +74,15 @@ struct TutorialModifier: ViewModifier {
         self.viewID = viewID
     }
     
+    
+    @available(macOS 14.0, *)
     func body(content: Content) -> some View {
         content
             .onReceive(publisher, perform: { newValue in
                 currentModifier  = newValue
             })
             .sensoryFeedback(.selection, trigger: currentModifier)
+    #if canImport(UIKit)
             .background {
                 UIKitPopover(item: $currentModifier, content: {
                     if let details = currentModifier?.detail {
@@ -84,11 +93,15 @@ struct TutorialModifier: ViewModifier {
                     currentModifier = nil
                 }
             }
+    #else
+            .popover(item: $currentModifier) { detail in
+                Text("\(detail)")
+            }
+    #endif
     }
 }
 
-
-#Preview {
-    NavigateHomePreview()
-        .tint(Color.theme.button)
-}
+//#Preview {
+//    NavigateHomePreview()
+//        .tint(Color.theme.button)
+//}

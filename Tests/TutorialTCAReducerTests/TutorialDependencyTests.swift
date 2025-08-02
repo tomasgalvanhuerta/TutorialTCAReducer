@@ -7,85 +7,87 @@
 
 
 import XCTest
+import Testing
 import Combine
-@testable import MoreToe_Works
+import Dependencies
 
-final class TutorialDependencyTests: XCTestCase {
-    var tutorial: TutorialDependency!
-    var cancellables: Set<AnyCancellable>!
+@testable import TutorialTCAReducer
 
-    override func setUp() {
-        super.setUp()
-        tutorial = TutorialDependency()
-        cancellables = []
+struct TutorialDependencyTests {
+
+    @Test func path_emitsNewValue() async throws {
+        let tutorial: TutorialDependency = .init()
+        var cancellables: Set<AnyCancellable> = []
+        let uuid = UUID()
+        await withDependencies { dependency in
+            dependency.uuid = .constant(uuid)
+        } operation: {
+            let expectedString = AttributedString("Testing String")
+            let title: String = "Testing Title"
+            let expected = TutorialDetails(title, expectedString)
+            let expectation = XCTestExpectation(description: "Should publish new tutorial step")
+
+            tutorial.publisher
+                .dropFirst() // drop the initial nil
+                .sink { tutorialDetails in
+                    #expect(tutorialDetails?.detail == expected.detail)
+                    expectation.fulfill()
+                }
+                .store(in: &cancellables)
+
+            tutorial.path(expected)
+
+            _ = await XCTWaiter.fulfillment(of: [expectation], timeout: 1.0)
+        }
     }
 
-    override func tearDown() {
-        tutorial = nil
-        cancellables = nil
-        super.tearDown()
+    @Test func path_nil_callsStopTutorial() async throws {
+        let tutorial: TutorialDependency = .init()
+        var cancellables: Set<AnyCancellable> = []
+        let uuid = UUID()
+        await withDependencies { dependency in
+            dependency.uuid = .constant(uuid)
+        } operation: {
+            let expectedString = AttributedString("Testing String")
+            let title: String = "Testing Title"
+            let expected = TutorialDetails(title, expectedString)
+            let expectation = XCTestExpectation(description: "Should emit on cancel")
+            
+            tutorial.path(expected)
+            
+            tutorial.cancelCurrent
+                .sink { value in
+                    #expect(value == expected)
+                    expectation.fulfill()
+                }
+                .store(in: &cancellables)
+            
+            tutorial.path(nil)
+            
+            _ = await XCTWaiter.fulfillment(of: [expectation], timeout: 1.0)
+        }
     }
 
-    func test_path_emitsNewValue() {
-        let expected = TutorialDetails(id: "intro", step: 1)
-        let expectation = XCTestExpectation(description: "Should publish new tutorial step")
-
+    @Test func stopTutorial_resetsRelay() async throws {
+        let tutorial = TutorialDependency()
+        var cancellables: Set<AnyCancellable> = []
+        let expectCancel = XCTestExpectation(description: "Should emit on cancel")
+        let expectNil = XCTestExpectation(description: "Should emit nil")
+        
         tutorial.publisher
-            .dropFirst() // drop the initial nil
-            .sink { value in
-                XCTAssertEqual(value?.id, expected.id)
-                XCTAssertEqual(value?.step, expected.step)
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-
-        tutorial.path(expected)
-
-        wait(for: [expectation], timeout: 1.0)
-    }
-
-    func test_path_nil_callsStopTutorial() {
-        let expected = TutorialDetails(id: "exit", step: 99)
-        let expectation = XCTestExpectation(description: "Should emit on cancel")
-
-        tutorial.path(expected)
-
-        tutorial.cancelCurrent
-            .sink { value in
-                XCTAssertEqual(value?.id, expected.id)
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-
-        tutorial.path(nil)
-
-        wait(for: [expectation], timeout: 1.0)
-    }
-
-    func test_stopTutorial_resetsRelay() {
-        let expected = TutorialDetails(id: "stop", step: 0)
-        let cancelExpectation = XCTestExpectation(description: "Cancel should emit previous value")
-        let clearExpectation = XCTestExpectation(description: "Publisher should emit nil")
-
-        tutorial.path(expected)
-
-        tutorial.cancelCurrent
-            .sink { value in
-                XCTAssertEqual(value?.id, expected.id)
-                cancelExpectation.fulfill()
-            }
-            .store(in: &cancellables)
-
-        tutorial.publisher
-            .dropFirst(2) // initial nil, then value
             .sink { value in
                 XCTAssertNil(value)
-                clearExpectation.fulfill()
+                expectNil.fulfill()
+            }.store(in: &cancellables)
+        
+        tutorial.cancelCurrent
+            .sink { value in
+                XCTAssertNil(value)
+                expectCancel.fulfill()
             }
             .store(in: &cancellables)
-
+        
         tutorial.stopTutorial()
-
-        wait(for: [cancelExpectation, clearExpectation], timeout: 1.0)
+        _ = await XCTWaiter.fulfillment(of: [expectCancel, expectNil], timeout: 1.0)
     }
 }

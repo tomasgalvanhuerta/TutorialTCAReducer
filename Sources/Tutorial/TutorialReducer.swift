@@ -38,6 +38,7 @@ import CasePaths
  }
  ```
  */
+@available(macOS 14, *)
 struct Tutorial<ParentState, ParentAction: Equatable>: Reducer {
     @Dependency(\.tutorial) var tutorial
 
@@ -69,6 +70,7 @@ struct Tutorial<ParentState, ParentAction: Equatable>: Reducer {
  - TODO:
     - There is no way for the associated value to be reconstructed from The expected path.
  */
+@available(macOS 14, *)
 struct TutorialInstruction<ParentAction: Equatable>: Equatable {
     let detail: TutorialDetails
     let path: ParentAction
