@@ -5,17 +5,16 @@
 //  Created by Tomas Galvan-Huerta on 7/12/25.
 //
 
-import Testing
 import XCTest
 import Combine
 import ComposableArchitecture
 
 @testable import TutorialTCAReducer
 
-struct TutorialReducerTests {
+final class TutorialReducerTests: XCTestCase {
 
     @MainActor
-    @Test func removesFirstStepWhenActionMatchesOneAction() async throws {
+    func testRemovesFirstStepWhenActionMatchesOneAction() async throws {
         // Not meant to stop Tutorial because there is another action, `action2` next
         let title = "TestTitle How to become a witch"
         
@@ -43,7 +42,7 @@ struct TutorialReducerTests {
     }
     
     @MainActor
-    @Test func removesFirstStepWhenActionMatchesAllActions() async throws {
+    func testRemovesFirstStepWhenActionMatchesAllActions() async throws {
         // Not meant to stop Tutorial because there is another action, `action2` next
         let title = "TestTitle How to become a witch"
         
@@ -75,7 +74,8 @@ struct TutorialReducerTests {
         }
     }
 
-    @Test func doesNotChangeStepsWhenActionDoesNotMatch() async throws {
+    @MainActor
+    func testDoesNotChangeStepsWhenActionDoesNotMatch() async throws {
         // Not meant to stop Tutorial because there is another action, `action2` next
         let title = "TestTitle How to become a witch"
         
@@ -98,7 +98,8 @@ struct TutorialReducerTests {
         }
     }
     
-    @Test func doesNotChangeStepsWhenActionDoesNotMatch_OutOfOrder() async throws {
+    @MainActor
+    func testDoesNotChangeStepsWhenActionDoesNotMatch_OutOfOrder() async throws {
         // Not meant to stop Tutorial because there is another action, `action2` next
         let title = "TestTitle How to become a witch"
         

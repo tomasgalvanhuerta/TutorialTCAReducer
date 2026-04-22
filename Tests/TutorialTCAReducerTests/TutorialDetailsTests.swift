@@ -7,28 +7,28 @@
 
 
 import XCTest
-import Testing
 import Combine
 import ComposableArchitecture
 
 
 @testable import TutorialTCAReducer
 
-struct TutorialDetailsTests {
-    @Test
-    func detail_intialize() async throws {
+final class TutorialDetailsTests: XCTestCase {
+    
+    @MainActor
+    func testDetailIntialize() async throws {
         let title = "TestIDTitle"
         let attructuredString = try AttributedString(markdown: "You are a wizard **Harry**")
         
         let uuid = UUID()
 
-        withDependencies { dependencies in
+        await withDependencies { dependencies in
             dependencies.uuid = .constant(uuid)
         } operation: {
             let details = TutorialDetails(title, attructuredString)
-            #expect(details.displayID == title)
-            #expect(details.id == uuid)
-            #expect(details.detail == attructuredString)
+            XCTAssertEqual(details.displayID, title)
+            XCTAssertEqual(details.id, uuid)
+            XCTAssertEqual(details.detail, attructuredString)
         }
     }
 }

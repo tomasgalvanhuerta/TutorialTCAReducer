@@ -1,0 +1,261 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Guide Users Through Your App with Tutorial Reducer") {
+        Learn how to create interactive tutorials that guide users step-by-step through tasks in your Composable Architecture app.
+        
+        The Tutorial reducer watches for specific user actions and automatically advances through predefined steps, helping users learn your app's features by doing.
+        
+        @Image(source: "person.fill.questionmark", alt: "Interactive tutorial guide")
+    }
+    
+    @Section(title: "Understanding the Tutorial Reducer") {
+        @ContentAndMedia {
+            The Tutorial reducer is designed to create guided experiences that teach users how to accomplish tasks in your app. 
+            
+            Think of it like a GPS for your UI: it tells users where to tap next, and only advances when they perform the correct action.
+            
+            @Image(source: "map.fill", alt: "Tutorial navigation")
+        }
+        
+        @Steps {
+            @Step {
+                The Tutorial reducer monitors actions in your app and compares them against a sequence of expected actions. When a user performs the correct action, the tutorial advances to the next step.
+                
+                @Code(name: "TutorialReducer.swift", file: 01-tutorial-overview-01.swift)
+            }
+            
+            @Step {
+                Each tutorial step consists of a `TutorialInstruction` that contains:
+                - A `detail` with display information (title and instructions)
+                - A `path` representing the action the user needs to perform
+                
+                @Code(name: "TutorialReducer.swift", file: 01-tutorial-overview-02.swift)
+            }
+            
+            @Step {
+                The `TutorialState` holds the current tutorial's steps and title. It tracks which step the user is on by keeping an array of remaining steps.
+                
+                @Code(name: "TutorialReducer.swift", file: 01-tutorial-overview-03.swift)
+            }
+        }
+    }
+    
+    @Section(title: "Creating Your First Tutorial") {
+        @ContentAndMedia {
+            Let's build a simple tutorial that guides users through creating a plan in a task management app.
+            
+            We'll teach them to:
+            1. Tap the edit plan button
+            2. Tap the new plan button
+            3. Proceed to the next screen
+            
+            @Image(source: "list.clipboard.fill", alt: "Creating a plan tutorial")
+        }
+        
+        @Steps {
+            @Step {
+                Start by defining your parent domain with actions that users can perform. This will be your app's normal reducer.
+                
+                @Code(name: "PlanDomain.swift", file: 02-create-tutorial-01.swift)
+            }
+            
+            @Step {
+                Add a `tutorialState` property to your parent state. This will hold the tutorial configuration.
+                
+                @Code(name: "PlanDomain.swift", file: 02-create-tutorial-02.swift)
+            }
+            
+            @Step {
+                Create your tutorial instructions by defining each step the user needs to complete. Use descriptive titles that will guide the user.
+                
+                @Code(name: "PlanDomain.swift", file: 02-create-tutorial-03.swift)
+            }
+            
+            @Step {
+                Initialize your tutorial state with the steps array and a title for the overall tutorial.
+                
+                @Code(name: "PlanDomain.swift", file: 02-create-tutorial-04.swift)
+            }
+            
+            @Step {
+                Add the Tutorial reducer to your parent domain's body, passing the keypath to the tutorial state.
+                
+                This integrates the tutorial tracking into your reducer composition.
+                
+                @Code(name: "PlanDomain.swift", file: 02-create-tutorial-05.swift)
+            }
+            
+            @Step {
+                When you run your app, the Tutorial reducer will now watch for actions. When the user performs `.tappedEditPlanButton`, it will remove that step and move to the next one.
+                
+                @Code(name: "PlanDomain.swift", file: 02-create-tutorial-06.swift)
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Tutorial UI") {
+        @ContentAndMedia {
+            The Tutorial reducer handles the logic, but you need to build UI to show users what to do.
+            
+            The reducer communicates with your UI through the `TutorialChannel` dependency.
+            
+            @Image(source: "bubble.left.and.text.bubble.right.fill", alt: "Tutorial UI")
+        }
+        
+        @Steps {
+            @Step {
+                The Tutorial reducer uses the `tutorial` dependency to communicate step changes. When a step is completed, it calls `tutorial.path(_:)` with the next step's details.
+                
+                @Code(name: "TutorialReducer.swift", file: 03-display-ui-01.swift)
+            }
+            
+            @Step {
+                Implement the `TutorialChannel` protocol to receive updates about tutorial progress. This is where you'll handle showing tooltips, highlights, or other UI elements.
+                
+                @Code(name: "MyTutorialChannel.swift", file: 03-display-ui-02.swift)
+            }
+            
+            @Step {
+                In your view, subscribe to the tutorial channel's publisher to receive the current step and display appropriate UI hints.
+                
+                @Code(name: "PlanView.swift", file: 03-display-ui-03.swift)
+            }
+            
+            @Step {
+                Create visual indicators for the current step. Common patterns include:
+                - Highlighting the target button
+                - Showing a tooltip with instructions
+                - Dimming other parts of the screen
+                
+                @Code(name: "PlanView.swift", file: 03-display-ui-04.swift)
+            }
+        }
+    }
+    
+    @Section(title: "Advanced Tutorial Patterns") {
+        @ContentAndMedia {
+            Master advanced techniques for creating sophisticated tutorials that handle complex user flows and branching paths.
+            
+            @Image(source: "arrow.triangle.branch", alt: "Advanced patterns")
+        }
+        
+        @Steps {
+            @Step {
+                For tutorials that span multiple screens, create instructions that map to navigation actions.
+                
+                @Code(name: "MultiScreenTutorial.swift", file: 04-advanced-01.swift)
+            }
+            
+            @Step {
+                Handle tutorial interruptions by detecting when users navigate away or cancel. You might want to restart the tutorial or save progress.
+                
+                @Code(name: "MultiScreenTutorial.swift", file: 04-advanced-02.swift)
+            }
+            
+            @Step {
+                Use the `stopTutorial()` method from `TutorialChannel` when all steps are complete to clean up tutorial UI and celebrate completion.
+                
+                @Code(name: "TutorialReducer.swift", file: 04-advanced-03.swift)
+            }
+            
+            @Step {
+                Test your tutorials by verifying that actions progress through steps correctly and that completion triggers the appropriate cleanup.
+                
+                @Code(name: "TutorialTests.swift", file: 04-advanced-04.swift)
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when a user performs an action that matches the current tutorial step?
+            
+            @Choice(isCorrect: false) {
+                The tutorial restarts from the beginning
+                
+                @Justification(reaction: "Not quite!") {
+                    The tutorial doesn't restart when the correct action is performed.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                The current step is removed and the tutorial advances to the next step
+                
+                @Justification(reaction: "Correct!") {
+                    When an action matches `currentTutorialStep?.path`, the reducer removes the first step from the array and calls `tutorial.path(_:)` with the next step's details.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All steps are cleared and the tutorial ends
+                
+                @Justification(reaction: "Try again!") {
+                    Only the current step is removed, not all steps.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Nothing happens
+                
+                @Justification(reaction: "Not quite!") {
+                    The reducer actively removes the completed step and notifies the UI.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens if a user performs an action that doesn't match the current tutorial step?
+            
+            @Choice(isCorrect: true) {
+                The tutorial stays on the current step
+                
+                @Justification(reaction: "Exactly right!") {
+                    The reducer only advances when the action matches the expected path. Other actions are ignored for tutorial purposes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The tutorial fails and must be restarted
+                
+                @Justification(reaction: "Not quite!") {
+                    The tutorial simply waits for the correct action. Users can try different things without breaking the tutorial.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The action is blocked from executing
+                
+                @Justification(reaction: "Try again!") {
+                    The Tutorial reducer doesn't prevent actions from executing. It only observes them.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How should you structure tutorial steps for a multi-screen flow?
+            
+            @Choice(isCorrect: false) {
+                Create separate tutorials for each screen
+                
+                @Justification(reaction: "This could work, but there's a better way!") {
+                    While possible, this makes it harder to maintain continuity across screens.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Include navigation actions as tutorial steps
+                
+                @Justification(reaction: "Perfect!") {
+                    By including navigation actions in your tutorial path, you can guide users seamlessly across multiple screens in a single tutorial flow.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Tutorials can't span multiple screens
+                
+                @Justification(reaction: "Not true!") {
+                    Tutorials work great across multiple screens when you include navigation actions in the steps.
+                }
+            }
+        }
+    }
+}
