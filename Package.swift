@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "TutorialTCAReducer",
     platforms: [
-        .macOS(.v10_15),
+        .macOS(.v13),
         .iOS(.v17),
         .macCatalyst(.v17),
         .watchOS(.v10),
@@ -26,8 +26,7 @@ let package = Package(
         .target(
             name: "TutorialTCAReducer",
             dependencies: [
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "DoccSwiftPackagePlugin", package: "swift-docc-plugin")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
         .testTarget(
