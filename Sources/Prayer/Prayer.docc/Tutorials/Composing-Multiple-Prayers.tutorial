@@ -1,0 +1,149 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Composing Multiple Prayers") {
+        Learn how to use multiple Prayer reducers to handle different cross-cutting concerns in your app.
+        
+        In this tutorial, you'll set up separate Prayer reducers for error handling, analytics tracking, and side effects coordination.
+        
+        @Image(source: "square.stack.3d.up.fill", alt: "Multiple Prayer reducers handling different concerns")
+    }
+    
+    @Section(title: "Separate Concerns with Multiple Prayers") {
+        @ContentAndMedia {
+            Different concerns should be handled by different Prayer instances. This keeps your code organized and maintainable.
+            
+            @Image(source: "rectangle.3.group", alt: "Prayer reducers for errors, analytics, and side effects")
+        }
+        
+        @Steps {
+            @Step {
+                Start with a parent feature that has multiple child features with different action types.
+                
+                @Code(name: "ParentFeature.swift", file: "04-multiple-prayers-01.swift")
+            }
+            
+            @Step {
+                Add a Prayer for error handling.
+                
+                This Prayer listens for any `failedToSave` actions and routes them to `.handleError`.
+                
+                @Code(name: "ParentFeature.swift", file: "04-multiple-prayers-02.swift", previousFile: "04-multiple-prayers-01.swift")
+            }
+            
+            @Step {
+                Add a second Prayer for analytics tracking.
+                
+                This Prayer listens for success actions and sends analytics events. Notice it uses `Void` as the `PrayerValue` since success actions don't carry data.
+                
+                @Code(name: "ParentFeature.swift", file: "04-multiple-prayers-03.swift", previousFile: "04-multiple-prayers-02.swift")
+            }
+            
+            @Step {
+                Add a third Prayer for side effects coordination.
+                
+                This Prayer triggers cloud syncing whenever profile or settings are updated.
+                
+                @Code(name: "ParentFeature.swift", file: "04-multiple-prayers-04.swift", previousFile: "04-multiple-prayers-03.swift")
+            }
+            
+            @Step {
+                Implement the action handlers for all Prayer-generated actions.
+                
+                Each Prayer transforms child actions into distinct parent actions.
+                
+                @Code(name: "ParentFeature.swift", file: "04-multiple-prayers-05.swift", previousFile: "04-multiple-prayers-04.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding Prayer Composition") {
+        @ContentAndMedia {
+            Multiple Prayers work independently and their effects are concatenated in order.
+            
+            @Image(source: "link.circle.fill", alt: "Prayer effects being concatenated")
+        }
+        
+        @Steps {
+            @Step {
+                Consider what happens when a single action matches multiple Prayers.
+                
+                If an action matches both error and analytics Prayers, both will fire.
+                
+                @Code(name: "EdgeCases.swift", file: "05-edge-cases-01.swift")
+            }
+            
+            @Step {
+                Test multiple Prayers responding to the same action.
+                
+                Notice that both `.handleError` and `.trackAnalytics` are received.
+                
+                @Code(name: "EdgeCasesTests.swift", file: "05-edge-cases-02.swift", previousFile: "05-edge-cases-01.swift")
+            }
+            
+            @Step {
+                Use Prayer's ordering to your advantage.
+                
+                Prayers execute in the order they're composed. Place critical handlers first.
+                
+                @Code(name: "OrderMatters.swift", file: "05-ordering-01.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Can multiple Prayer reducers listen to the same action?
+            
+            @Choice(isCorrect: false) {
+                No, only one Prayer can listen to each action.
+                
+                @Justification(reaction: "Not quite!") {
+                    Multiple Prayers can listen to the same action. Each will create its own effect.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Yes, and all matching Prayers will trigger their effects.
+                
+                @Justification(reaction: "Correct!") {
+                    Multiple Prayers can observe the same action and each will send their transformed action via concatenated effects.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Yes, but only the first matching Prayer will trigger.
+                
+                @Justification(reaction: "Not exactly!") {
+                    All matching Prayers trigger - their effects are concatenated, not short-circuited.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens to the order of Prayer effects?
+            
+            @Choice(isCorrect: false) {
+                They execute in random order.
+                
+                @Justification(reaction: "Nope!") {
+                    Prayer effects execute in a predictable order.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                They execute in the order the Prayers are composed in the body.
+                
+                @Justification(reaction: "That's right!") {
+                    Prayers execute in composition order using `.concatenate`, so the first Prayer in your body runs first.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                They all execute simultaneously.
+                
+                @Justification(reaction: "Not quite!") {
+                    While effects are async, they're sent in a specific order via concatenation.
+                }
+            }
+        }
+    }
+}

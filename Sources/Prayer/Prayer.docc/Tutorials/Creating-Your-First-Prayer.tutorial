@@ -1,0 +1,171 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Creating Your First Prayer") {
+        Learn how to set up a Prayer reducer to handle error actions from multiple child features in one centralized location.
+        
+        In this tutorial, you'll build a parent feature that uses Prayer to listen for error actions from two child features without manually threading the errors through each layer.
+        
+        @Image(source: "first-prayer-intro.png", alt: "A parent feature listening to child errors")
+    }
+    
+    @Section(title: "Define Your Feature Hierarchy") {
+        @ContentAndMedia {
+            Start by defining your parent and child features. The parent will need to handle errors from multiple children.
+            
+            @Image(source: "feature-hierarchy.png", alt: "Parent feature with two child features")
+        }
+        
+        @Steps {
+            @Step {
+                Create a parent feature with state for two child features.
+                
+                @Code(name: "ParentFeature.swift", file: "01-parent-feature-01.swift")
+            }
+            
+            @Step {
+                Add an action enum with cases for handling errors and child actions.
+                
+                Notice the `handleError` case - this is where Prayer will send transformed child errors.
+                
+                @Code(name: "ParentFeature.swift", file: "01-parent-feature-02.swift")
+            }
+            
+            @Step {
+                Define your child features that can fail with error messages.
+                
+                Both features have a `failedToSave(String)` action that we want to handle centrally.
+                
+                @Code(name: "ChildFeatures.swift", file: "01-child-features-01.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Add the Prayer Reducer") {
+        @ContentAndMedia {
+            Now add Prayer to your reducer composition to listen for child error actions.
+            
+            @Image(source: "prayer-listening.png", alt: "Prayer reducer intercepting child actions")
+        }
+        
+        @Steps {
+            @Step {
+                Start with a basic reducer implementation.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-setup-01.swift")
+            }
+            
+            @Step {
+                Add the Prayer reducer to listen for `failedToSave` actions from both children.
+                
+                The `listening` parameter takes an array of `CaseKeyPath` values pointing to the specific actions you want to observe.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-setup-02.swift", previousFile: "02-prayer-setup-01.swift")
+            }
+            
+            @Step {
+                Implement the error handling logic in your main reducer.
+                
+                When Prayer detects a `failedToSave` action, it transforms it into `.handleError(errorMessage)`.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-setup-03.swift", previousFile: "02-prayer-setup-02.swift")
+            }
+            
+            @Step {
+                Add the child reducers using `ifLet`.
+                
+                Prayer works alongside your normal reducer composition.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-setup-04.swift", previousFile: "02-prayer-setup-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "See Prayer in Action") {
+        @ContentAndMedia {
+            Test your Prayer reducer to see how it intercepts and transforms child actions.
+            
+            @Image(source: "prayer-in-action.png", alt: "Prayer reducer handling errors")
+        }
+        
+        @Steps {
+            @Step {
+                Write a test that triggers an error from a child feature.
+                
+                @Code(name: "ParentFeatureTests.swift", file: "03-testing-01.swift")
+            }
+            
+            @Step {
+                Verify that Prayer transforms the child error into a parent action.
+                
+                Notice how `.createTrainingCycle(.presented(.failedToSave("Network error")))` automatically becomes `.handleError("Network error")`.
+                
+                @Code(name: "ParentFeatureTests.swift", file: "03-testing-02.swift", previousFile: "03-testing-01.swift")
+            }
+            
+            @Step {
+                Test that Prayer works for both child features.
+                
+                The same `handleError` action is triggered regardless of which child failed.
+                
+                @Code(name: "ParentFeatureTests.swift", file: "03-testing-03.swift", previousFile: "03-testing-02.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does the `answerWith` closure do in a Prayer reducer?
+            
+            @Choice(isCorrect: false) {
+                It filters which actions to listen for.
+                
+                @Justification(reaction: "Not quite!") {
+                    The `listening` parameter determines which actions to observe. Try again!
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It transforms the matched action value into a parent action.
+                
+                @Justification(reaction: "That's right!") {
+                    The `answerWith` closure takes the `PrayerValue` (like an error string) and returns a parent action.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It determines when to stop listening for actions.
+                
+                @Justification(reaction: "Not exactly!") {
+                    Prayer continues listening for all actions. The `answerWith` closure transforms matched values.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why is Prayer useful in modular apps?
+            
+            @Choice(isCorrect: false) {
+                It makes reducers run faster.
+                
+                @Justification(reaction: "Nope!") {
+                    Prayer is about code organization, not performance optimization.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It eliminates boilerplate when handling deeply nested actions.
+                
+                @Justification(reaction: "Exactly!") {
+                    Prayer lets you respond to grandchild or great-grandchild actions without threading them through every layer.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It prevents child features from receiving actions.
+                
+                @Justification(reaction: "Not correct!") {
+                    Prayer doesn't prevent actions from reaching child reducers - it just observes them and creates additional effects.
+                }
+            }
+        }
+    }
+}

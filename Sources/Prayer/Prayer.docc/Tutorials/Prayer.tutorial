@@ -1,0 +1,25 @@
+@Tutorials(name: "Prayer Reducer") {
+    @Intro(title: "Using Prayer to Handle Cross-Cutting Actions") {
+        Learn how to use the Prayer reducer to listen to deeply nested child actions and respond to them at the parent level, eliminating boilerplate and centralizing cross-cutting concerns like error handling and analytics.
+        
+        @Image(source: "prayer-hero.png", alt: "A diagram showing actions flowing upward through a reducer hierarchy")
+    }
+    
+    @Chapter(name: "Prayer Basics") {
+        @Image(source: "prayer-basics.png", alt: "Prayer reducer listening to child actions")
+        
+        Learn the fundamentals of Prayer and how it simplifies action handling in modular Composable Architecture apps.
+        
+        @TutorialReference(tutorial: "doc:Creating-Your-First-Prayer")
+        @TutorialReference(tutorial: "doc:Listening-To-Multiple-Children")
+    }
+    
+    @Chapter(name: "Advanced Patterns") {
+        @Image(source: "prayer-advanced.png", alt: "Multiple Prayer reducers handling different concerns")
+        
+        Explore advanced techniques for composing multiple Prayer reducers and handling complex scenarios.
+        
+        @TutorialReference(tutorial: "doc:Composing-Multiple-Prayers")
+        @TutorialReference(tutorial: "doc:Testing-Prayer-Reducers")
+    }
+}
