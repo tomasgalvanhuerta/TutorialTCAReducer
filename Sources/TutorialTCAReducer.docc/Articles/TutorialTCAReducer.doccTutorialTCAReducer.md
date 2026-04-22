@@ -8,22 +8,36 @@ TutorialTCAReducer introduces the **Prayer** pattern, a powerful reducer composi
 
 Think of Prayer as a "listener" that watches for specific actions from child features and automatically transforms them into parent actions, without requiring explicit action forwarding through every level of your feature hierarchy.
 
+### Why Use Prayer?
+
+In traditional TCA, handling child actions in parent reducers requires explicit action forwarding:
+
+```swift
+case .child(.failedToSave(let error)):
+    state.errorMessage = error
+    return .none
+```
+
+With Prayer, you declare what to listen for once, and it handles the rest:
+
+```swift
+Prayer(
+    listening: [\.child.failedToSave],
+    answerWith: { error in .handleError(error) }
+)
+```
+
 ## Topics
 
-### Getting Started
+### Essentials
 
-- <doc:Creating-Your-First-Prayer>
-- <doc:Understanding-Prayer-Basics>
-### Advanced Techniques
+- <doc:Prayer>
+- <doc:PrayerUnit>
 
-- <doc:Composing-Multiple-Prayers>
-- <doc:Handling-Nested-Actions>
+### Tutorials
 
-### API Reference
+- <doc:TutorialTCAReducer>
 
-- ``Prayer``
-- ``PrayerUnit``
-
-### Sample Code
+### Articles
 
 - <doc:Prayer-Code-Examples>
