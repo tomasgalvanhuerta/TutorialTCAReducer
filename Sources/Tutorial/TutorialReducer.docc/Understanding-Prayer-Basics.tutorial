@@ -1,0 +1,229 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Understanding Prayer Basics") {
+        Learn the fundamentals of the Prayer reducer pattern and how it solves common problems in nested feature hierarchies.
+        
+        This tutorial will teach you when and why to use Prayer reducers in your Composable Architecture applications.
+        
+        @Image(source: "books.vertical.fill", alt: "Learning the basics of Prayer reducers")
+    }
+    
+    @Section(title: "The Problem: Action Forwarding") {
+        @ContentAndMedia {
+            In traditional TCA, handling child actions in parent reducers requires explicit action forwarding, which becomes cumbersome with deep nesting.
+            
+            @Image(source: "arrow.up.arrow.down.circle", alt: "Action forwarding between features")
+        }
+        
+        @Steps {
+            @Step {
+                Consider a parent feature with a child feature that can fail.
+                
+                Without Prayer, you'd need to handle the child's action explicitly in the parent's reducer.
+                
+                @Code(name: "TraditionalApproach.swift", file: "01-traditional-01.swift")
+            }
+            
+            @Step {
+                As your app grows, you might have multiple child features, each with failure states.
+                
+                Handling each one requires boilerplate code in the parent reducer.
+                
+                @Code(name: "TraditionalApproach.swift", file: "01-traditional-02.swift", previousFile: "01-traditional-01.swift")
+            }
+            
+            @Step {
+                The problem compounds with deeply nested features.
+                
+                Each level must explicitly forward actions to its parent.
+                
+                @Code(name: "TraditionalApproach.swift", file: "01-traditional-03.swift", previousFile: "01-traditional-02.swift")
+            }
+        }
+    }
+    
+    @Section(title: "The Solution: Prayer Reducers") {
+        @ContentAndMedia {
+            Prayer reducers listen for specific child actions anywhere in the hierarchy and transform them into parent actions automatically.
+            
+            @Image(source: "antenna.radiowaves.left.and.right", alt: "Prayer listening to child actions")
+        }
+        
+        @Steps {
+            @Step {
+                Import ComposableArchitecture to get started.
+                
+                The Prayer pattern is built on TCA's case path system.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-solution-01.swift")
+            }
+            
+            @Step {
+                Define your parent feature with a state and actions.
+                
+                Include an action to handle errors from children.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-solution-02.swift", previousFile: "02-prayer-solution-01.swift")
+            }
+            
+            @Step {
+                Add child actions to your parent's action enum.
+                
+                These represent actions from child features.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-solution-03.swift", previousFile: "02-prayer-solution-02.swift")
+            }
+            
+            @Step {
+                Implement the reducer to handle the error action.
+                
+                This is where the transformed actions will be processed.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-solution-04.swift", previousFile: "02-prayer-solution-03.swift")
+            }
+            
+            @Step {
+                Add a Prayer reducer to listen for child failures.
+                
+                Prayer automatically transforms child errors into parent error handling.
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-solution-05.swift", previousFile: "02-prayer-solution-04.swift")
+            }
+            
+            @Step {
+                Notice how clean this is compared to traditional action forwarding.
+                
+                No explicit switch cases needed for child actions!
+                
+                @Code(name: "ParentFeature.swift", file: "02-prayer-solution-06.swift", previousFile: "02-prayer-solution-05.swift")
+            }
+        }
+    }
+    
+    @Section(title: "How Prayer Works") {
+        @ContentAndMedia {
+            Under the hood, Prayer uses TCA's case paths to pattern match on actions and transform them into effects.
+            
+            @Image(source: "gearshape.2", alt: "Prayer internal mechanism")
+        }
+        
+        @Steps {
+            @Step {
+                Prayer takes an array of case key paths to listen for.
+                
+                Each case key path points to a specific action in your action hierarchy.
+                
+                @Code(name: "PrayerExample.swift", file: "03-how-it-works-01.swift")
+            }
+            
+            @Step {
+                The `answerWith` closure transforms the matched value.
+                
+                This closure receives the associated value from the matched action.
+                
+                @Code(name: "PrayerExample.swift", file: "03-how-it-works-02.swift", previousFile: "03-how-it-works-01.swift")
+            }
+            
+            @Step {
+                When an action flows through the reducer, Prayer checks if it matches any listening paths.
+                
+                If it matches, Prayer sends the transformed action as an effect.
+                
+                @Code(name: "PrayerExample.swift", file: "03-how-it-works-03.swift", previousFile: "03-how-it-works-02.swift")
+            }
+            
+            @Step {
+                Multiple Prayers can listen to the same action.
+                
+                Their effects are concatenated in the order they're composed.
+                
+                @Code(name: "PrayerExample.swift", file: "03-how-it-works-04.swift", previousFile: "03-how-it-works-03.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What problem does Prayer solve in TCA?
+            
+            @Choice(isCorrect: false) {
+                It makes reducers run faster.
+                
+                @Justification(reaction: "Not quite!") {
+                    Prayer is about reducing boilerplate, not performance optimization.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It eliminates boilerplate action forwarding in nested feature hierarchies.
+                
+                @Justification(reaction: "Exactly!") {
+                    Prayer allows parents to listen to deeply nested child actions without explicit forwarding at each level.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It replaces the need for child features.
+                
+                @Justification(reaction: "Not at all!") {
+                    Prayer works *with* child features, making it easier to observe their actions.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What does the `answerWith` closure do?
+            
+            @Choice(isCorrect: false) {
+                It handles errors from the prayer.
+                
+                @Justification(reaction: "Nope!") {
+                    Prayer doesn't throw errors; it transforms actions.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It transforms the matched child action value into a parent action.
+                
+                @Justification(reaction: "Correct!") {
+                    The `answerWith` closure receives the associated value from the matched action and returns a parent action.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It filters which actions to listen to.
+                
+                @Justification(reaction: "Not quite!") {
+                    The `listening` array determines which actions to match; `answerWith` transforms the matched values.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When does Prayer send its transformed action?
+            
+            @Choice(isCorrect: false) {
+                Immediately when the reducer is created.
+                
+                @Justification(reaction: "Not correct!") {
+                    Prayer only acts when it detects a matching action.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                As an effect when a matching action flows through the reducer.
+                
+                @Justification(reaction: "That's right!") {
+                    Prayer watches for matching actions and sends the transformed action as an effect.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only when explicitly triggered by the parent.
+                
+                @Justification(reaction: "Incorrect!") {
+                    Prayer listens automatically; no explicit triggering needed.
+                }
+            }
+        }
+    }
+}

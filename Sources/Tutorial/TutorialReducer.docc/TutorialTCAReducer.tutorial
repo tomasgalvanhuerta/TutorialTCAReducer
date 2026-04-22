@@ -1,0 +1,44 @@
+@Tutorials(name: "Prayer Reducer Pattern") {
+    @Intro(title: "Master the Prayer Pattern") {
+        Learn how to use Prayer reducers to simplify cross-cutting concerns in your Composable Architecture applications.
+        
+        The Prayer pattern eliminates boilerplate action forwarding and makes your code more maintainable by allowing parent features to observe deeply nested child actions.
+        
+        @Image(source: "sparkles", alt: "Prayer reducer pattern")
+    }
+    
+    @Chapter(name: "Getting Started with Prayer") {
+        Learn the basics of creating and using Prayer reducers in your TCA features.
+        
+        @Image(source: "hand.raised.fill", alt: "Getting started")
+        
+        @TutorialReference(tutorial: "doc:Creating-Your-First-Prayer")
+        @TutorialReference(tutorial: "doc:Understanding-Prayer-Basics")
+    }
+    
+    @Chapter(name: "Advanced Prayer Techniques") {
+        Explore advanced patterns for composing multiple Prayers and handling complex nested actions.
+        
+        @Image(source: "gearshape.2.fill", alt: "Advanced techniques")
+        
+        @TutorialReference(tutorial: "doc:Composing-Multiple-Prayers")
+        @TutorialReference(tutorial: "doc:Handling-Nested-Actions")
+    }
+    
+    @Resources {
+        Explore more resources for learning about Prayer and TCA.
+        
+        @Documentation(destination: "https://pointfreeco.github.io/swift-composable-architecture/") {
+            Browse the official Composable Architecture documentation to learn more about reducers, effects, and state management.
+            
+            - [TCA Documentation](https://pointfreeco.github.io/swift-composable-architecture/)
+            - [Case Paths](https://github.com/pointfreeco/swift-case-paths)
+        }
+        
+        @SampleCode(destination: "doc:Prayer-Code-Examples") {
+            Download and explore real-world code examples of Prayer patterns.
+            
+            See common use cases like error handling, analytics, and side effect coordination.
+        }
+    }
+}

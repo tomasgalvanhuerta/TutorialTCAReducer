@@ -1,0 +1,185 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Handling Nested Actions") {
+        Learn how to use Prayer to listen to deeply nested actions through PresentationAction, navigation, and complex feature hierarchies.
+        
+        This tutorial covers advanced case path composition for observing actions at any depth in your feature tree.
+        
+        @Image(source: "square.stack.3d.down.right", alt: "Nested action handling")
+    }
+    
+    @Section(title: "Understanding Nested Case Paths") {
+        @ContentAndMedia {
+            Case paths can be chained to reach deeply nested actions, making Prayer extremely powerful for complex hierarchies.
+            
+            @Image(source: "arrow.down.right.and.arrow.up.left", alt: "Case path composition")
+        }
+        
+        @Steps {
+            @Step {
+                Start with a parent feature that presents a modal child feature.
+                
+                The child is managed using `@Presents` and `PresentationAction`.
+                
+                @Code(name: "ModalFeature.swift", file: "06-nested-01.swift")
+            }
+            
+            @Step {
+                The child feature has its own nested actions.
+                
+                We want the parent to listen for specific child operations.
+                
+                @Code(name: "ModalFeature.swift", file: "06-nested-02.swift", previousFile: "06-nested-01.swift")
+            }
+            
+            @Step {
+                Use case path composition to reach the nested action.
+                
+                Chain paths through `.presented` to access modal content actions.
+                
+                @Code(name: "ModalFeature.swift", file: "06-nested-03.swift", previousFile: "06-nested-02.swift")
+            }
+            
+            @Step {
+                Prayer can listen to multiple levels of nesting.
+                
+                Use dot notation to traverse the entire action hierarchy.
+                
+                @Code(name: "ModalFeature.swift", file: "06-nested-04.swift", previousFile: "06-nested-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Working with PresentationAction") {
+        @ContentAndMedia {
+            PresentationAction is TCA's way of managing presented features like sheets, popovers, and alerts. Prayer integrates seamlessly.
+            
+            @Image(source: "square.and.arrow.up", alt: "Presentation actions")
+        }
+        
+        @Steps {
+            @Step {
+                Define a parent that can present multiple child features.
+                
+                Each child is wrapped in `PresentationAction`.
+                
+                @Code(name: "MultiModalFeature.swift", file: "07-presentation-01.swift")
+            }
+            
+            @Step {
+                Listen to actions from different presented features.
+                
+                Prayer can observe multiple presentation paths simultaneously.
+                
+                @Code(name: "MultiModalFeature.swift", file: "07-presentation-02.swift", previousFile: "07-presentation-01.swift")
+            }
+            
+            @Step {
+                Use `\.presented` to access the content of the presentation.
+                
+                This works for sheets, popovers, fullScreenCover, and more.
+                
+                @Code(name: "MultiModalFeature.swift", file: "07-presentation-03.swift", previousFile: "07-presentation-02.swift")
+            }
+            
+            @Step {
+                Combine Prayer with `.ifLet` for clean composition.
+                
+                Prayer listens while `.ifLet` manages the presentation lifecycle.
+                
+                @Code(name: "MultiModalFeature.swift", file: "07-presentation-04.swift", previousFile: "07-presentation-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Navigation Hierarchies") {
+        @ContentAndMedia {
+            Prayer works with navigation stacks and other navigation patterns in TCA.
+            
+            @Image(source: "arrow.forward.square.fill", alt: "Navigation hierarchies")
+        }
+        
+        @Steps {
+            @Step {
+                Create a feature with a navigation stack.
+                
+                Each destination in the stack can trigger actions.
+                
+                @Code(name: "NavigationFeature.swift", file: "08-navigation-01.swift")
+            }
+            
+            @Step {
+                Listen to actions from any destination in the stack.
+                
+                Use case paths through the navigation path.
+                
+                @Code(name: "NavigationFeature.swift", file: "08-navigation-02.swift", previousFile: "08-navigation-01.swift")
+            }
+            
+            @Step {
+                Handle actions from multiple navigation levels.
+                
+                Prayer can observe the entire navigation hierarchy.
+                
+                @Code(name: "NavigationFeature.swift", file: "08-navigation-03.swift", previousFile: "08-navigation-02.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you access actions from a presented feature?
+            
+            @Choice(isCorrect: false) {
+                Use `\.modal` directly.
+                
+                @Justification(reaction: "Not quite!") {
+                    `\.modal` gives you the `PresentationAction`, but you need to go deeper.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Use `\.modal.presented.childAction` to chain through the presentation.
+                
+                @Justification(reaction: "Exactly!") {
+                    The `\.presented` component of `PresentationAction` gives you access to the child's actions.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Presented features can't be observed with Prayer.
+                
+                @Justification(reaction: "Wrong!") {
+                    Prayer works perfectly with `PresentationAction` and `@Presents`.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Can Prayer listen to multiple nesting levels?
+            
+            @Choice(isCorrect: false) {
+                No, Prayer only works one level deep.
+                
+                @Justification(reaction: "Not true!") {
+                    Prayer can traverse any depth of nesting.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Yes, use case path composition like `\.child.grandchild.action`.
+                
+                @Justification(reaction: "Correct!") {
+                    Case paths can be chained to reach any depth in your action hierarchy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only if you write custom case paths.
+                
+                @Justification(reaction: "Nope!") {
+                    TCA's `@CasePathable` macro provides all the case paths you need.
+                }
+            }
+        }
+    }
+}
