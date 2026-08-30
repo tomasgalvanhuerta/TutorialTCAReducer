@@ -12,10 +12,8 @@ import Dependencies
     Details that will be presented as a popOver
  
  */
-@available(macOS 12, *)
-struct TutorialDetails: Equatable, Identifiable, Sendable {
-    @available(macOS 12, *)
-    init(_ displayID: String, _ detail: AttributedString) {
+struct TutorialDetails: Equatable, Identifiable {
+    init(_ displayID: CustomStringConvertible, _ detail: AttributedString) {
         @Dependency(\.uuid) var uuid
         self.displayID = displayID
         self.detail = detail
@@ -23,6 +21,12 @@ struct TutorialDetails: Equatable, Identifiable, Sendable {
     }
 
     let detail: AttributedString
-    let displayID: String
+    let displayID: CustomStringConvertible
     let id: UUID
+    
+    
+    static func == (lhs: TutorialDetails, rhs: TutorialDetails) -> Bool {
+        lhs.id == rhs.id && lhs.displayID.description == rhs.displayID.description
+    }
 }
+

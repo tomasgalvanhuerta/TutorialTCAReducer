@@ -20,16 +20,46 @@ import Foundation
  }
  ```
  */
-@available(macOS 14, *)
 struct TutorialState<ParentAction: Equatable>: Equatable, Identifiable {
     typealias Path = TutorialInstruction<ParentAction>
     var steps: [Path]
     let title: String
     var displayID: String? {
-        steps.first?.detail.displayID
+        steps.first?.detail.displayID.description
     }
     var currentTutorialStep: Path? {
         steps.first
     }
     var id = UUID()
 }
+
+extension TutorialState {
+    /// Add Steps to existing TutorialState by combing TutorialState
+    /// Title and ID will stay the same
+    /// User would need to convert from The child Action to parent action
+    func addFrom(_ tutorialState: TutorialState) -> TutorialState<ParentAction> {
+        var newTutorialState = self
+        newTutorialState.steps.append(contentsOf: tutorialState.steps)
+        return newTutorialState
+    }
+    
+//    // RepCellDomain -> ActiveNavigationDomain.Action
+//    /// Transforms the TutorialState Child Path's to Parent Paths
+//    func path<T: Equatable, Y: Equatable>(_ transform: @escaping (([T]) -> Y)) -> [TutorialInstruction<Y>] {
+//
+//    }
+}
+
+/**
+ Get TutorialState
+    - let tutorial = SomeDomain.TutorialToPerformState()
+ Transform Child Actions to Parent Actions
+    - let transformedSteps = tutorialstate.steps.map(ParentActoin)
+    
+ Turn to Tutorial State
+    - let readyTutorialState = TutorialState.init( title: "Name of new TutorialState", paths: [transformedSteps])
+ 
+ 
+ Create Initializer for ParentAction <---- Can we Make this a generic initializer? No.....
+  
+ */
