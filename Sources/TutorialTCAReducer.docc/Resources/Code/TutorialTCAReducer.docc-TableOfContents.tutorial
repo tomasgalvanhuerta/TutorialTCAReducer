@@ -1,0 +1,46 @@
+@Tutorials(name: "TutorialTCAReducer") {
+    @Intro(title: "Master Advanced TCA Patterns") {
+        Learn how to use Prayer and Tutorial reducers to build better Composable Architecture applications.
+        
+        Prayer eliminates action forwarding boilerplate, while Tutorial creates interactive step-by-step guidance for your users.
+        
+        @Image(source: "sparkles", alt: "TutorialTCAReducer patterns")
+    }
+    
+    @Chapter(name: "Prayer Reducer Pattern") {
+        Eliminate boilerplate action forwarding and handle cross-cutting concerns elegantly.
+        
+        @Image(source: "antenna.radiowaves.left.and.right", alt: "Prayer reducer")
+        
+        @TutorialReference(tutorial: "doc:Creating-Your-First-Prayer")
+        @TutorialReference(tutorial: "doc:Understanding-Prayer-Basics")
+        @TutorialReference(tutorial: "doc:Composing-Multiple-Prayers")
+        @TutorialReference(tutorial: "doc:Handling-Nested-Actions")
+    }
+    
+    @Chapter(name: "Tutorial Reducer Pattern") {
+        Guide users through your app with interactive step-by-step tutorials.
+        
+        @Image(source: "map.fill", alt: "Tutorial reducer")
+        
+        @TutorialReference(tutorial: "doc:Building-Interactive-Tutorials")
+    }
+    
+    @Resources {
+        Explore more resources for learning about these advanced TCA patterns.
+        
+        @Documentation(destination: "https://pointfreeco.github.io/swift-composable-architecture/") {
+            Browse the official Composable Architecture documentation to learn more about reducers, effects, and state management.
+            
+            - [TCA Documentation](https://pointfreeco.github.io/swift-composable-architecture/)
+            - [Case Paths](https://github.com/pointfreeco/swift-case-paths)
+            - [Swift Dependencies](https://github.com/pointfreeco/swift-dependencies)
+        }
+        
+        @SampleCode(destination: "doc:Prayer-Code-Examples") {
+            Download and explore real-world code examples.
+            
+            See common use cases like error handling, analytics, side effect coordination, and interactive tutorials.
+        }
+    }
+}

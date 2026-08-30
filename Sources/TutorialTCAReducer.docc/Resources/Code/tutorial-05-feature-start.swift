@@ -1,36 +1,37 @@
-import Foundation
 import ComposableArchitecture
 
-// Step 1: Define your domain with user actions
+// Step 1: Start with your normal TCA feature
+
 @Reducer
-struct PlanDomain {
+struct AppFeature {
     @ObservableState
     struct State: Equatable {
         var plans: [Plan] = []
-        var isEditingPlan = false
+        var isEditing = false
     }
     
     @CasePathable
     enum Action: Equatable {
-        case tappedEditPlanButton
-        case tappedNewPlanButton
-        case tappedNextButton
+        case tappedEditButton
+        case tappedNewPlan
+        case tappedNext
         case planCreated(Plan)
     }
     
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .tappedEditPlanButton:
-                state.isEditingPlan = true
+            case .tappedEditButton:
+                state.isEditing = true
                 return .none
                 
-            case .tappedNewPlanButton:
-                // Navigate to new plan creation
-                return .none
+            case .tappedNewPlan:
+                return .run { send in
+                    let newPlan = Plan()
+                    await send(.planCreated(newPlan))
+                }
                 
-            case .tappedNextButton:
-                // Proceed to next screen
+            case .tappedNext:
                 return .none
                 
             case .planCreated(let plan):
@@ -41,7 +42,7 @@ struct PlanDomain {
     }
 }
 
-struct Plan: Equatable, Identifiable {
-    let id: UUID
-    let name: String
+struct Plan: Equatable {
+    let id = UUID()
+    var title = "New Plan"
 }

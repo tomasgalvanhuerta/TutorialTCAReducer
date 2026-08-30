@@ -1,0 +1,353 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Building Interactive Tutorials with Tutorial Reducer") {
+        Learn how to guide users through your app with step-by-step interactive tutorials using the Tutorial reducer.
+        
+        The Tutorial reducer watches for specific user actions and automatically advances through predefined steps, creating an engaging learning experience.
+        
+        @Image(source: "map.fill", alt: "Interactive tutorial navigation")
+    }
+    
+    @Section(title: "Understanding the Tutorial Reducer") {
+        @ContentAndMedia {
+            The Tutorial reducer is a powerful tool for creating guided experiences in your TCA app.
+            
+            Unlike Prayer (which listens and transforms actions), Tutorial tracks sequential user progress through predefined steps.
+            
+            @Image(source: "list.number", alt: "Sequential steps")
+        }
+        
+        @Steps {
+            @Step {
+                The Tutorial reducer compares incoming actions against expected steps.
+                
+                When an action matches the current step, it's removed and the tutorial advances.
+                
+                @Code(name: "TutorialReducer.swift", file: "tutorial-01-overview.swift")
+            }
+            
+            @Step {
+                Each tutorial consists of a `TutorialState` containing an array of steps.
+                
+                The `TutorialState` also has a title and tracks the current step.
+                
+                @Code(name: "TutorialReducer.swift", file: "tutorial-02-state.swift")
+            }
+            
+            @Step {
+                Each step is a `TutorialInstruction` with two components.
+                
+                The `detail` contains display information, and the `path` is the action to watch for.
+                
+                @Code(name: "TutorialReducer.swift", file: "tutorial-03-instruction.swift")
+            }
+            
+            @Step {
+                The `TutorialDetails` holds the information shown to users.
+                
+                It includes a `displayID` (for matching UI elements) and an `AttributedString` with instructions.
+                
+                @Code(name: "TutorialReducer.swift", file: "tutorial-04-details.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Your First Tutorial") {
+        @ContentAndMedia {
+            Let's build a tutorial that guides users through creating their first plan in a task management app.
+            
+            We'll track three steps: tapping edit, creating new plan, and proceeding to next screen.
+            
+            @Image(source: "checklist", alt: "Tutorial checklist")
+        }
+        
+        @Steps {
+            @Step {
+                Start with your parent feature that has actions users can perform.
+                
+                This is your normal TCA feature - no special setup needed yet.
+                
+                @Code(name: "AppFeature.swift", file: "tutorial-05-feature-start.swift")
+            }
+            
+            @Step {
+                Add a `tutorialState` property to your feature's state.
+                
+                This will hold the tutorial configuration and track progress.
+                
+                @Code(name: "AppFeature.swift", file: "tutorial-06-add-state.swift")
+            }
+            
+            @Step {
+                Define your tutorial steps with display IDs and action paths.
+                
+                Each step specifies what the user needs to do next.
+                
+                @Code(name: "AppFeature.swift", file: "tutorial-07-define-steps.swift")
+            }
+            
+            @Step {
+                Create `TutorialDetails` for each step with helpful instructions.
+                
+                Use `AttributedString` for rich text formatting in your UI.
+                
+                @Code(name: "AppFeature.swift", file: "tutorial-08-create-details.swift")
+            }
+            
+            @Step {
+                Combine the details and paths into `TutorialInstruction` objects.
+                
+                These are the complete step definitions.
+                
+                @Code(name: "AppFeature.swift", file: "tutorial-09-create-instructions.swift")
+            }
+            
+            @Step {
+                Initialize your `TutorialState` with the steps array and a title.
+                
+                The title describes the overall tutorial goal.
+                
+                @Code(name: "AppFeature.swift", file: "tutorial-10-init-state.swift")
+            }
+            
+            @Step {
+                Add the Tutorial reducer to your feature's body.
+                
+                Pass the keypath to your tutorial state property.
+                
+                @Code(name: "AppFeature.swift", file: "tutorial-11-add-reducer.swift")
+            }
+            
+            @Step {
+                The Tutorial reducer is now active!
+                
+                When users perform actions, it compares them to the current step and advances automatically.
+                
+                @Code(name: "AppFeature.swift", file: "tutorial-12-how-it-works.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Tutorial UI") {
+        @ContentAndMedia {
+            The Tutorial reducer handles logic, but you need to build UI to guide users.
+            
+            Use the `TutorialChannel` dependency to receive tutorial updates and display helpful hints.
+            
+            @Image(source: "sparkles.rectangle.stack.fill", alt: "Tutorial UI")
+        }
+        
+        @Steps {
+            @Step {
+                The Tutorial reducer uses the `tutorial` dependency to communicate.
+                
+                When a step completes, it calls `tutorial.path(_:)` with the next step's details.
+                
+                @Code(name: "TutorialReducer.swift", file: "tutorial-13-dependency.swift")
+            }
+            
+            @Step {
+                In your view, access the tutorial dependency to observe changes.
+                
+                Subscribe to the publisher to receive current step updates.
+                
+                @Code(name: "AppView.swift", file: "tutorial-14-view-subscribe.swift")
+            }
+            
+            @Step {
+                Use the `displayID` to highlight the correct UI element.
+                
+                Match it against your step's display ID to show hints.
+                
+                @Code(name: "AppView.swift", file: "tutorial-15-highlight.swift")
+            }
+            
+            @Step {
+                Display the instruction text to guide users.
+                
+                Show it in a tooltip, popover, or overlay near the target element.
+                
+                @Code(name: "AppView.swift", file: "tutorial-16-show-instructions.swift")
+            }
+            
+            @Step {
+                Create a reusable tutorial highlight modifier.
+                
+                This makes it easy to add tutorial hints throughout your app.
+                
+                @Code(name: "TutorialHighlight.swift", file: "tutorial-17-highlight-modifier.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Advanced Tutorial Patterns") {
+        @ContentAndMedia {
+            Master advanced techniques for complex tutorials including multi-screen flows and error handling.
+            
+            @Image(source: "arrow.triangle.branch", alt: "Advanced patterns")
+        }
+        
+        @Steps {
+            @Step {
+                Handle tutorials that span multiple screens by including navigation actions.
+                
+                Each screen transition becomes a tutorial step.
+                
+                @Code(name: "MultiScreenTutorial.swift", file: "tutorial-18-navigation.swift")
+            }
+            
+            @Step {
+                Detect when users navigate away or cancel the flow.
+                
+                The `cancelCurrent` publisher notifies you of interruptions.
+                
+                @Code(name: "MultiScreenTutorial.swift", file: "tutorial-19-interruption.swift")
+            }
+            
+            @Step {
+                When all steps are complete, the tutorial automatically stops.
+                
+                The reducer calls `tutorial.path(nil)` which triggers `stopTutorial()`.
+                
+                @Code(name: "CompletionHandler.swift", file: "tutorial-20-completion.swift")
+            }
+            
+            @Step {
+                Test your tutorials by verifying actions advance through steps correctly.
+                
+                Check that completion clears the tutorial state properly.
+                
+                @Code(name: "TutorialTests.swift", file: "tutorial-21-testing.swift")
+            }
+            
+            @Step {
+                Create multiple tutorials for different features.
+                
+                Users can choose which tutorial to start based on what they want to learn.
+                
+                @Code(name: "TutorialSelector.swift", file: "tutorial-22-multiple.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when a user performs an action that matches the current tutorial step?
+            
+            @Choice(isCorrect: false) {
+                The tutorial restarts from the beginning.
+                
+                @Justification(reaction: "Not quite!") {
+                    The tutorial doesn't restart when users perform the correct action.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                The current step is removed and the tutorial advances to the next step.
+                
+                @Justification(reaction: "Exactly right!") {
+                    When `action == state.currentTutorialStep?.path`, the reducer calls `steps.removeFirst()` and notifies the UI via `tutorial.path(_:)`.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All steps are cleared and the tutorial ends immediately.
+                
+                @Justification(reaction: "Try again!") {
+                    Only the current step is removed. The tutorial ends when all steps are complete.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The action is prevented from executing.
+                
+                @Justification(reaction: "Nope!") {
+                    Tutorial observes actions but never prevents them from executing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the purpose of `TutorialDetails.displayID`?
+            
+            @Choice(isCorrect: false) {
+                It uniquely identifies the tutorial instance.
+                
+                @Justification(reaction: "Not quite!") {
+                    The `id` property (UUID) identifies the tutorial instance. `displayID` serves a different purpose.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It matches tutorial steps to specific UI elements for highlighting.
+                
+                @Justification(reaction: "Correct!") {
+                    The `displayID` is used to identify which UI element should be highlighted for the current step, allowing you to match tutorial instructions to buttons, fields, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It displays text instructions to the user.
+                
+                @Justification(reaction: "Try again!") {
+                    The `detail` property (AttributedString) contains the instruction text. The `displayID` is for UI matching.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you communicate tutorial progress to your UI?
+            
+            @Choice(isCorrect: false) {
+                Directly read the `TutorialState` in your view.
+                
+                @Justification(reaction: "Not the best approach!") {
+                    While you could access state, the recommended pattern uses the dependency system.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Subscribe to the `tutorial` dependency's publisher.
+                
+                @Justification(reaction: "Perfect!") {
+                    The Tutorial reducer updates the `tutorial` dependency, which publishes changes through `publisher`. Your view subscribes to receive current step details.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Tutorial progress can't be shown in the UI.
+                
+                @Justification(reaction: "Not true!") {
+                    Tutorial is specifically designed to communicate with UI through the dependency system.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens if a user performs an action that doesn't match the current tutorial step?
+            
+            @Choice(isCorrect: true) {
+                The tutorial stays on the current step and waits.
+                
+                @Justification(reaction: "Exactly!") {
+                    The reducer only advances when `action == currentTutorialStep?.path`. Other actions are ignored for tutorial tracking.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The tutorial fails and must be restarted.
+                
+                @Justification(reaction: "Nope!") {
+                    Users can explore freely. The tutorial simply waits for the expected action.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The tutorial advances anyway.
+                
+                @Justification(reaction: "Not correct!") {
+                    Only exact action matches cause the tutorial to advance.
+                }
+            }
+        }
+    }
+}
